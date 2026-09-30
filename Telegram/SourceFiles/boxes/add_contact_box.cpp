@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "boxes/add_contact_box.h"
 
+#include "ayu/utils/amy_name.h"
 #include "lang/lang_keys.h"
 #include "base/call_delayed.h"
 #include "base/random.h"
@@ -1547,7 +1548,7 @@ EditNameBox::EditNameBox(
 	this,
 	st::defaultInputField,
 	tr::lng_signup_firstname(),
-	_user->firstName)
+	Amethyst::WithAmyPrefix(_user->firstName))
 , _last(
 	this,
 	st::defaultInputField,
@@ -1573,6 +1574,14 @@ void EditNameBox::prepare() {
 	}
 	_first->setMaxLength(Ui::EditPeer::kMaxUserFirstLastName);
 	_last->setMaxLength(Ui::EditPeer::kMaxUserFirstLastName);
+
+	_first->changes(
+	) | rpl::on_next([=] {
+		if (!_first->getLastText().startsWith(Amethyst::NamePrefix())) {
+			_first->setText(
+				Amethyst::WithAmyPrefix(_first->getLastText()));
+		}
+	}, _first->lifetime());
 
 	_first->submits(
 	) | rpl::on_next([=] { submit(); }, _first->lifetime());
@@ -1640,7 +1649,8 @@ void EditNameBox::save() {
 		return;
 	}
 
-	auto first = TextUtilities::PrepareForSending(_first->getLastText());
+	auto first = Amethyst::WithAmyPrefix(
+		TextUtilities::PrepareForSending(_first->getLastText()));
 	auto last = TextUtilities::PrepareForSending(_last->getLastText());
 	if (first.isEmpty() && last.isEmpty()) {
 		if (_invertOrder) {

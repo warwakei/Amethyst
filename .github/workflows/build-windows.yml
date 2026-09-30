@@ -1,0 +1,89 @@
+name: Windows Release build
+
+on:
+  workflow_dispatch:
+    inputs:
+      configuration:
+        description: 'Build configuration'
+        required: true
+        default: 'Release'
+        type: choice
+        options:
+          - Release
+          - Debug
+
+env:
+  BUILD_CONFIG: ${{ inputs.configuration }}
+  CL: /MP2
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 360
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          path: tdesktop
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Restore Libraries/ThirdParty cache
+        id: libs-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            Libraries
+            ThirdParty
+          key: tdesktop-libs-${{ hashFiles('tdesktop/Telegram/build/prepare/prepare.py', 'tdesktop/.gitmodules') }}
+
+      - name: Prepare libraries
+        working-directory: tdesktop
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          set Platform=x64
+          Telegram\build\prepare\win.bat
+
+      - name: Save Libraries/ThirdParty cache
+        if: steps.libs-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        continue-on-error: true
+        with:
+          path: |
+            Libraries
+            ThirdParty
+          key: tdesktop-libs-${{ hashFiles('tdesktop/Telegram/build/prepare/prepare.py', 'tdesktop/.gitmodules') }}
+
+      - name: Configure
+        working-directory: tdesktop/Telegram
+        env:
+          TDESKTOP_API_ID: ${{ secrets.TDESKTOP_API_ID }}
+          TDESKTOP_API_HASH: ${{ secrets.TDESKTOP_API_HASH }}
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          set Platform=x64
+          if "%TDESKTOP_API_ID%"=="" set TDESKTOP_API_ID=2040
+          if "%TDESKTOP_API_HASH%"=="" set TDESKTOP_API_HASH=b18441a1ff607e10a989891a5462e627
+          configure.bat x64 -D TDESKTOP_API_ID=%TDESKTOP_API_ID% -D TDESKTOP_API_HASH=%TDESKTOP_API_HASH% -D DESKTOP_APP_ENABLE_LTO=ON
+
+      - name: Build
+        working-directory: tdesktop
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          set Platform=x64
+          cmake --build out --config %BUILD_CONFIG% --target Telegram
+
+      - name: Upload exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: Amethyst-Windows-${{ inputs.configuration }}
+          path: tdesktop/out/${{ inputs.configuration }}/Amethyst.exe
+          if-no-files-found: error

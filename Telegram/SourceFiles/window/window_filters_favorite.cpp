@@ -169,11 +169,6 @@ struct KnownContent {
 			&st::foldersSectionSettings,
 			tr::lng_settings_advanced(tr::now),
 		};
-	} else if (starts("experiment")) {
-		return {
-			&st::foldersSectionSettings,
-			tr::lng_settings_experimental(tr::now),
-		};
 	} else if (starts("edit")
 		|| starts("information")
 		|| starts("my-profile")

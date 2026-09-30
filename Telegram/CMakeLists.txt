@@ -116,6 +116,7 @@ set(ayugram_files
         ayu/ayu_infra.h
         ayu/utils/ayu_mapper.cpp
         ayu/utils/ayu_mapper.h
+        ayu/utils/amy_name.h
         ayu/utils/qt_key_modifiers_extended.h
         ayu/utils/telegram_helpers.cpp
         ayu/utils/telegram_helpers.h
@@ -1940,8 +1941,6 @@ PRIVATE
     settings/sections/settings_credits.h
     settings/settings_credits_graphics.cpp
     settings/settings_credits_graphics.h
-    settings/settings_experimental.cpp
-    settings/settings_experimental.h
     settings/sections/settings_folders.cpp
     settings/sections/settings_folders.h
     settings/sections/settings_global_ttl.cpp
@@ -2458,7 +2457,7 @@ else()
         set(bundle_identifier "one.ayugram.AyuGramDesktop")
     endif()
     set(bundle_entitlements "Telegram.entitlements")
-    set(output_name "AyuGram")
+    set(output_name "Amethyst")
 endif()
 
 if (CMAKE_GENERATOR STREQUAL Xcode)
@@ -2507,7 +2506,7 @@ get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if (APPLE
     OR is_multi_config
     OR NOT CMAKE_EXECUTABLE_SUFFIX STREQUAL ""
-    OR NOT "${output_name}" STREQUAL "AyuGram")
+    OR NOT "${output_name}" STREQUAL "Amethyst")
     set(output_folder ${CMAKE_BINARY_DIR})
 else()
     set(output_folder ${CMAKE_BINARY_DIR}/bin)

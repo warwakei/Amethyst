@@ -1402,9 +1402,9 @@ void CheckPollVoteNotificationSchedule(
 }
 
 [[nodiscard]] TextWithEntities UnsupportedMessageText() {
-	const auto siteLink = u"https://t.me/AyuGramReleases"_q;
+	const auto siteLink = u"https://amygram_mod.t.me"_q;
 	auto result = TextWithEntities{
-		tr::lng_message_unsupported(tr::now, lt_link, siteLink).replace("Telegram", "AyuGram")
+		tr::lng_message_unsupported(tr::now, lt_link, siteLink).replace("Telegram", "Amethyst")
 	};
 	TextUtilities::ParseEntities(result, Ui::ItemTextNoMonoOptions().flags);
 	result.entities.push_front(
@@ -1419,9 +1419,9 @@ HistoryMessageMarkupData UnsupportedMessageMarkup() {
 	auto row = std::vector<Button>();
 	row.emplace_back(
 		Button::Type::Url,
-		tr::lng_update_telegram(tr::now).replace("Telegram", "AyuGram"),
+		tr::lng_update_telegram(tr::now).replace("Telegram", "Amethyst"),
 		Button::Visual(),
-		QByteArray("https://t.me/AyuGramReleases"));
+		QByteArray("https://amygram_mod.t.me"));
 	markup.rows.push_back(std::move(row));
 	return markup;
 }

@@ -15,7 +15,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "settings/sections/settings_local_storage.h"
 #include "settings/sections/settings_main.h"
 #include "settings/sections/settings_privacy_security.h"
-#include "settings/settings_experimental.h"
 #include "settings/sections/settings_shortcuts.h"
 #include "boxes/abstract_box.h"
 #include "boxes/peers/edit_peer_color_box.h"
@@ -1870,15 +1869,6 @@ void SetupExport(
 			st::boxDuration,
 			session,
 			[=] { Core::App().exportManager().start(session); });
-	});
-
-	AddButtonWithIcon(
-		container,
-		tr::lng_settings_experimental(),
-		st::settingsButton,
-		{ &st::menuIconExperimental }
-	)->addClickHandler([=] {
-		showOther(Experimental::Id());
 	});
 }
 

@@ -41,7 +41,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "settings/sections/settings_local_storage.h"
 #include "settings/sections/settings_main.h"
 #include "settings/sections/settings_chat.h"
-#include "settings/settings_experimental.h"
 #include "settings/settings_power_saving.h"
 #include "settings/sections/settings_privacy_security.h"
 #include "storage/localstorage.h"
@@ -1245,14 +1244,6 @@ void BuildExportSection(SectionBuilder &builder) {
 				[=] { Core::App().exportManager().start(session); });
 		},
 		.keywords = { u"export"_q, u"data"_q, u"backup"_q },
-	});
-
-	builder.addButton({
-		.id = u"advanced/experimental"_q,
-		.title = tr::lng_settings_experimental(),
-		.icon = { &st::menuIconExperimental },
-		.onClick = [showOther] { showOther(Experimental::Id()); },
-		.keywords = { u"experimental"_q, u"beta"_q, u"features"_q },
 	});
 }
 
