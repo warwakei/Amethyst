@@ -14,7 +14,6 @@ on:
 
 env:
   BUILD_CONFIG: ${{ inputs.configuration }}
-  CL: /MP2
 
 jobs:
   build:
@@ -76,6 +75,8 @@ jobs:
 
       - name: Build
         working-directory: tdesktop
+        env:
+          CL: /MP2
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           set Platform=x64
