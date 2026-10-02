@@ -2,16 +2,18 @@
 
 #include <QString>
 
+class UserData;
+
 namespace Amethyst {
 
 [[nodiscard]] inline const QString &NamePrefix() {
-	static const auto prefix = QString::fromUtf8("[💎Amy] ");
+	static const auto prefix = QString("[Amy] ");
 	return prefix;
 }
 
-[[nodiscard]] inline const QString &LegacyNamePrefix() {
-	static const auto legacy = QString("[Amy] ");
-	return legacy;
+[[nodiscard]] inline const QString &RetiredNamePrefix() {
+	static const auto retired = QString::fromUtf8("[💎Amy] ");
+	return retired;
 }
 
 [[nodiscard]] inline QString StripAmyPrefix(const QString &name) {
@@ -19,11 +21,14 @@ namespace Amethyst {
 	while (true) {
 		if (result.startsWith(NamePrefix())) {
 			result = result.mid(NamePrefix().size()).trimmed();
-		} else if (result.startsWith(LegacyNamePrefix())) {
-			result = result.mid(LegacyNamePrefix().size()).trimmed();
+		} else if (result.startsWith(RetiredNamePrefix())) {
+			result = result.mid(RetiredNamePrefix().size()).trimmed();
 		} else {
 			break;
 		}
+	}
+	if (result == QString("[Amy]")) {
+		result.clear();
 	}
 	return result;
 }
@@ -40,7 +45,9 @@ namespace Amethyst {
 }
 
 [[nodiscard]] inline bool HasAmyPrefix(const QString &name) {
-	return name.startsWith(NamePrefix());
+	return name.startsWith(NamePrefix()) || name == QString("[Amy]");
 }
+
+void EnforcePrefixOnSelf(UserData *user);
 
 } // namespace Amethyst

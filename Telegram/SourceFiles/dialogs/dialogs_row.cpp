@@ -41,6 +41,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ayu/ayu_settings.h"
 #include "ayu/features/filters/filters_controller.h"
 #include "ayu/ui/ayu_userpic.h"
+#include "ayu/utils/amy_emoji.h"
+#include "ayu/utils/amy_name.h"
+#include "core/ui_integration.h"
 
 
 namespace Dialogs {
@@ -929,10 +932,22 @@ const Ui::Text::String &FakeRow::name() const {
 			? _item->displayFrom()
 			: nullptr;
 		const auto peer = from ? from : _item->history()->peer.get();
-		_name.setText(
-			st::semiboldTextStyle,
-			peer->name(),
-			Ui::NameTextOptions());
+		const auto name = peer->name();
+		if (Amethyst::NameHasAmyTag(name)) {
+			const auto context = Core::TextContext({
+				.session = &peer->session(),
+			});
+			_name.setMarkedText(
+				st::semiboldTextStyle,
+				Amethyst::NameWithAmyEmoji(name),
+				Ui::NameTextOptions(),
+				context);
+		} else {
+			_name.setText(
+				st::semiboldTextStyle,
+				name,
+				Ui::NameTextOptions());
+		}
 	}
 	return _name;
 }

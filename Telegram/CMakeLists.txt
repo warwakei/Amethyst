@@ -116,7 +116,10 @@ set(ayugram_files
         ayu/ayu_infra.h
         ayu/utils/ayu_mapper.cpp
         ayu/utils/ayu_mapper.h
+        ayu/utils/amy_name.cpp
         ayu/utils/amy_name.h
+        ayu/utils/amy_emoji.cpp
+        ayu/utils/amy_emoji.h
         ayu/utils/qt_key_modifiers_extended.h
         ayu/utils/telegram_helpers.cpp
         ayu/utils/telegram_helpers.h
@@ -156,6 +159,8 @@ set(ayugram_files
         ayu/ui/settings/settings_filters.h
         ayu/ui/settings/settings_main.cpp
         ayu/ui/settings/settings_main.h
+        ayu/ui/settings/settings_moderation.cpp
+        ayu/ui/settings/settings_moderation.h
         ayu/ui/settings/settings_other.cpp
         ayu/ui/settings/settings_other.h
         ayu/ui/settings/filters/settings_filters_list.cpp
@@ -176,6 +181,8 @@ set(ayugram_files
         ayu/ui/message_history/history_section.h
         ayu/ui/boxes/edit_mark_box.cpp
         ayu/ui/boxes/edit_mark_box.h
+        ayu/ui/boxes/iris_punish_box.cpp
+        ayu/ui/boxes/iris_punish_box.h
         ayu/ui/boxes/font_selector.cpp
         ayu/ui/boxes/font_selector.h
         ayu/ui/boxes/import_filters_box.cpp

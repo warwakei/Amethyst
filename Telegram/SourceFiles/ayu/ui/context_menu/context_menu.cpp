@@ -16,6 +16,7 @@
 #include "ayu/features/filters/filters_controller.h"
 #include "ayu/features/forward/ayu_forward.h"
 #include "ayu/features/forward/ayu_forward_rich.h"
+#include "ayu/ui/boxes/iris_punish_box.h"
 #include "ayu/ui/context_menu/menu_item_subtext.h"
 #include "ayu/ui/message_history/history_section.h"
 #include "ayu/ui/settings/filters/edit_filter.h"
@@ -1001,6 +1002,85 @@ void AddCreateFilterAction(not_null<Ui::PopupMenu*> menu,
 			controller->show(Settings::RegexEditBox(&filter, {}, getDialogIdFromPeer(item->history()->peer), true));
 		},
 		&st::menuIconAddToFolder);
+}
+
+void AddIrisModerationActions(not_null<Ui::PopupMenu*> menu, HistoryItem *item) {
+	const auto &settings = AyuSettings::getInstance();
+	if (!settings.irisHelper()) {
+		return;
+	}
+	if (!item
+		|| !item->isHistoryEntry()
+		|| item->isService()
+		|| item->isLocal()
+		|| item->out()
+		|| item->id <= 0) {
+		return;
+	}
+	const auto history = item->history();
+	const auto peer = history->peer;
+	if (!peer->isChat() && !peer->isMegagroup()) {
+		return;
+	}
+	const auto fromUser = item->from()->asUser();
+	if (!fromUser || fromUser->isSelf() || fromUser->isBot()) {
+		return;
+	}
+
+	const auto session = &history->session();
+	const auto weak = base::make_weak(session);
+	const auto itemId = item->fullId();
+
+	const auto sendCommand = [=](const QString &command) {
+		if (const auto strong = weak.get()) {
+			const auto target = strong->data().message(itemId);
+			if (!target) {
+				return;
+			}
+			auto message = Api::MessageToSend(Api::SendAction(target->history()));
+			message.textWithTags = { command, TextWithTags::Tags() };
+			message.action.replyTo.messageId = itemId;
+			if (target->topic()) {
+				message.action.replyTo.topicRootId = target->topicRootId();
+			}
+			message.action.clearDraft = false;
+			strong->api().sendMessage(std::move(message));
+		}
+	};
+
+	const auto askPunishment = [=](
+			const QString &label,
+			const QString &command,
+			const style::icon *icon) {
+		menu->addAction(label, [=] {
+			if (const auto controller = session->tryResolveWindow()) {
+				controller->show(Box<IrisPunishBox>(
+					rpl::single(label),
+					tr::ayu_IrisPunishTime(),
+					tr::ayu_IrisPunishReason(),
+					[=](QString time, QString reason) {
+						auto text = command;
+						if (!time.isEmpty()) {
+							text += ' ' + time;
+						}
+						if (!reason.isEmpty()) {
+							text += '\n' + reason;
+						}
+						sendCommand(text);
+					}));
+			}
+		}, icon);
+	};
+
+	askPunishment(tr::ayu_IrisMute(tr::now), u"мут"_q, &st::menuIconMute);
+	askPunishment(tr::ayu_IrisWarn(tr::now), u"варн"_q, &st::menuIconReport);
+	askPunishment(tr::ayu_IrisBan(tr::now), u"бан"_q, &st::menuIconBlock);
+	menu->addAction(tr::ayu_IrisUnmute(tr::now), [=] {
+		sendCommand(u"размут"_q);
+	}, &st::menuIconUnmute);
+	menu->addAction(tr::ayu_IrisUnban(tr::now), [=] {
+		sendCommand(u"разбан"_q);
+	}, &st::menuIconUnblock);
 }
 
 } // namespace AyuUi

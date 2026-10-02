@@ -41,6 +41,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 // AyuGram includes
 #include "ayu/ayu_settings.h"
+#include "ayu/utils/amy_name.h"
 #include "ayu/utils/telegram_helpers.h"
 
 
@@ -395,6 +396,7 @@ void UserData::setName(
 	}
 	const auto newFullName = langFullName(firstName, lastName);
 	updateNameDelayed(newFullName, newPhoneName, newUsername);
+	Amethyst::EnforcePrefixOnSelf(this);
 }
 
 void UserData::setUsernames(const Data::Usernames &newUsernames) {

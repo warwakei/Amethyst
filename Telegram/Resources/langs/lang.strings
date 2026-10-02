@@ -8628,6 +8628,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "ayu_CategoryGeneral" = "General";
 "ayu_CategoryAppearance" = "Appearance";
 "ayu_CategoryChats" = "Chats";
+"ayu_CategoryModeration" = "Moderation";
 "ayu_CategoryOther" = "Other";
 "ayu_CategoryGhostMode" = "Ghost Mode";
 "ayu_CategorySpy" = "Spy";
@@ -9011,6 +9012,17 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 "ayu_SearchByIDResults" = "Found by ID";
 "ayu_ContextCopyCallbackData" = "Copy Callback Data";
 "ayu_RepeatMessage" = "Repeat Message";
+"ayu_IrisHelper" = "Enable Iris Moderation Helper";
+"ayu_IrisHelperDescription" = "Adds Mute, Warn, Ban, Unmute and Unban actions to the message context menu in groups. Punishments are sent as a reply, e.g. Iris understands them.";
+"ayu_IrisMute" = "Mute";
+"ayu_IrisWarn" = "Warn";
+"ayu_IrisBan" = "Ban";
+"ayu_IrisUnmute" = "Unmute";
+"ayu_IrisUnban" = "Unban";
+"ayu_IrisPunishTitle" = "Iris punishment";
+"ayu_IrisPunishTime" = "Duration";
+"ayu_IrisPunishReason" = "Reason";
+"ayu_IrisPunishDone" = "Done";
 "ayu_RegisterURLScheme" = "Register URL Scheme";
 "ayu_PluginVersion" = "Version";
 "ayu_PluginNoDescription" = "No description provided.";

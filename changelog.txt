@@ -1,3 +1,8 @@
+1.0.2 (03.10.26)
+
+- Rebrand to Amethyst, enforced [Amy] name tag.
+- Iris moderation helper: mute/warn/ban from message context menu.
+
 7.0.9 (05.08.26)
 
 - Add saving rich messages to HTML and importing them back.

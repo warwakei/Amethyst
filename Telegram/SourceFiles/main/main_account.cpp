@@ -199,22 +199,7 @@ void Account::createSession(
 	}
 	_sessionValue = _session.get();
 
-	const auto full = Amethyst::WithAmyPrefix(_session->user()->firstName);
-	if (full != _session->user()->firstName) {
-		const auto weak = base::make_weak(this);
-		_session->api().request(MTPaccount_UpdateProfile(
-			MTP_flags(MTPaccount_UpdateProfile::Flag::f_first_name),
-			MTP_string(full),
-			MTPstring(),
-			MTPstring()
-		)).done([=](const MTPUser &updated) {
-			if (const auto strong = weak.get();
-				strong && strong->sessionExists()) {
-				strong->session().data().processUser(updated);
-			}
-		}).fail([=](const MTP::Error &) {
-		}).send();
-	}
+	Amethyst::EnforcePrefixOnSelf(_session->user());
 
 	Ensures(_session != nullptr);
 }

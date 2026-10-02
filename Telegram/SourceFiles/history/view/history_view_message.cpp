@@ -73,6 +73,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ayu/ayu_settings.h"
 #include "ayu/features/filters/filters_controller.h"
 #include "ayu/features/message_shot/message_shot.h"
+#include "ayu/utils/amy_emoji.h"
+#include "ayu/utils/amy_name.h"
 #include "styles/style_ayu_icons.h"
 
 
@@ -5390,10 +5392,25 @@ void Message::validateFromNameText(PeerData *from) const {
 	const auto version = from->nameVersion();
 	if (_fromNameVersion < version) {
 		_fromNameVersion = version;
-		_fromName.setText(
-			st::msgNameStyle,
-			from->name(),
-			Ui::NameTextOptions());
+		const auto name = from->name();
+		if (Amethyst::NameHasAmyTag(name)) {
+			const auto that = const_cast<Message*>(this);
+			const auto context = Core::TextContext({
+				.session = &history()->session(),
+				.repaint = [=] { that->customEmojiRepaint(); },
+				.customEmojiLoopLimit = 1,
+			});
+			_fromName.setMarkedText(
+				st::msgNameStyle,
+				Amethyst::NameWithAmyEmoji(name),
+				Ui::NameTextOptions(),
+				context);
+		} else {
+			_fromName.setText(
+				st::msgNameStyle,
+				name,
+				Ui::NameTextOptions());
+		}
 	}
 	if (from->isPremium()
 		|| (from->isChannel()

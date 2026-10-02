@@ -7,6 +7,9 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "dialogs/dialogs_entry.h"
 
+#include "ayu/utils/amy_emoji.h"
+#include "ayu/utils/amy_name.h"
+#include "core/ui_integration.h"
 #include "dialogs/dialogs_key.h"
 #include "dialogs/dialogs_indexed_list.h"
 #include "base/options.h"
@@ -337,10 +340,22 @@ const Ui::Text::String &Entry::chatListNameText() const {
 	const auto version = chatListNameVersion();
 	if (_chatListNameVersion < version) {
 		_chatListNameVersion = version;
-		_chatListNameText.setText(
-			st::semiboldTextStyle,
-			chatListName(),
-			Ui::NameTextOptions());
+		const auto name = chatListName();
+		if (Amethyst::NameHasAmyTag(name)) {
+			const auto context = Core::TextContext({
+				.session = &session(),
+			});
+			_chatListNameText.setMarkedText(
+				st::semiboldTextStyle,
+				Amethyst::NameWithAmyEmoji(name),
+				Ui::NameTextOptions(),
+				context);
+		} else {
+			_chatListNameText.setText(
+				st::semiboldTextStyle,
+				name,
+				Ui::NameTextOptions());
+		}
 	}
 	return _chatListNameText;
 }
