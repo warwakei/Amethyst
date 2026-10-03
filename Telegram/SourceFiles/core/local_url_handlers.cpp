@@ -36,7 +36,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "boxes/star_gift_box.h"
 #include "boxes/language_box.h"
 #include "boxes/url_auth_box.h"
-#include "passport/passport_form_controller.h"
 #include "ui/text/text_utilities.h"
 #include "ui/toast/toast.h"
 #include "ui/vertical_list.h"
@@ -445,39 +444,6 @@ bool ApplyMtprotoProxy(
 	return true;
 }
 
-bool ShowPassportForm(
-		Window::SessionController *controller,
-		const QMap<QString, QString> &params) {
-	if (!controller) {
-		return false;
-	}
-	const auto botId = params.value("bot_id", QString()).toULongLong();
-	const auto scope = params.value("scope", QString());
-	const auto callback = params.value("callback_url", QString());
-	const auto publicKey = params.value("public_key", QString());
-	const auto nonce = params.value(
-		Passport::NonceNameByScope(scope),
-		QString());
-	controller->showPassportForm(Passport::FormRequest(
-		botId,
-		scope,
-		callback,
-		publicKey,
-		nonce));
-	return true;
-}
-
-bool ShowPassport(
-		Window::SessionController *controller,
-		const Match &match,
-		const QVariant &context) {
-	return ShowPassportForm(
-		controller,
-		url_parse_params(
-			match->captured(1),
-			qthelp::UrlParamNameTransform::ToLower));
-}
-
 bool ShowWallPaper(
 		Window::SessionController *controller,
 		const Match &match,
@@ -618,7 +584,7 @@ bool ResolveUsernameOrPhone(
 		return qthelp::regex_match(u"^[0-9]+$"_q, phone, {}).valid();
 	};
 	if (domain == u"telegrampassport"_q) {
-		return ShowPassportForm(controller, params);
+		return false;
 	} else if (!validDomain(domain) && !validPhone(phone)) {
 		return false;
 	}
@@ -1755,10 +1721,6 @@ const std::vector<LocalUrlHandler> &LocalUrlHandlers() {
 			ApplyMtprotoProxy
 		},
 		{
-			u"^passport/?\\?(.+)(#|$)"_q,
-			ShowPassport
-		},
-		{
 			u"^bg/?\\?(.+)(#|$)"_q,
 			ShowWallPaper
 		},
@@ -2146,19 +2108,6 @@ struct InternalLinkCheckResult {
 	return { .command = command.toString(), .username = username };
 }
 
-bool InternalPassportLink(const QString &url) {
-	const auto result = InternalLinkCheck(url);
-
-	using namespace qthelp;
-	const auto matchOptions = RegExOption::CaseInsensitive;
-	const auto authMatch = regex_match(
-		u"^passport/?\\?(.+)(#|$)"_q,
-		result.command,
-		matchOptions);
-	const auto authLegacy = (result.username == u"telegrampassport"_q);
-	return authMatch->hasMatch() || authLegacy;
-}
-
 bool InternalPassportOrOAuthLink(const QString &url) {
 	const auto result = InternalLinkCheck(url);
 
@@ -2169,13 +2118,12 @@ bool InternalPassportOrOAuthLink(const QString &url) {
 		result.command,
 		matchOptions);
 	const auto oauthLegacy = (result.username == u"oauth"_q);
-	return InternalPassportLink(url)
-		|| oauthMatch->hasMatch()
+	return oauthMatch->hasMatch()
 		|| oauthLegacy;
 }
 
-bool StartUrlRequiresActivate(const QString &url) {
-	return Core::App().passcodeLocked() || !InternalPassportLink(url);
+bool StartUrlRequiresActivate(const QString &) {
+	return true;
 }
 
 void ResolveAndShowUniqueGift(

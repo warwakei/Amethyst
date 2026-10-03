@@ -284,11 +284,6 @@ PRIVATE
     menu/menu_ttl.cpp
     menu/menu_ttl.h
 
-    passport/ui/passport_details_row.cpp
-    passport/ui/passport_details_row.h
-    passport/ui/passport_form_row.cpp
-    passport/ui/passport_form_row.h
-
     payments/ui/payments_edit_card.cpp
     payments/ui/payments_edit_card.h
     payments/ui/payments_edit_information.cpp

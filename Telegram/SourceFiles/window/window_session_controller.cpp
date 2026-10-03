@@ -68,7 +68,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_web_page.h"
 #include "data/data_search_calendar.h"
 #include "dialogs/ui/chat_search_in.h"
-#include "passport/passport_form_controller.h"
 #include "chat_helpers/tabbed_selector.h"
 #include "chat_helpers/emoji_interactions.h"
 #include "core/shortcuts.h"
@@ -3058,17 +3057,6 @@ void SessionController::showCalendar(ShowCalendarDescriptor &&descriptor) {
 		.dynamicImageForDate = std::move(searchCalendarResult.factory),
 		.requireImage = requireImage,
 	}));
-}
-
-void SessionController::showPassportForm(const Passport::FormRequest &request) {
-	_passportForm = std::make_unique<Passport::FormController>(
-		this,
-		request);
-	_passportForm->show();
-}
-
-void SessionController::clearPassportForm() {
-	_passportForm = nullptr;
 }
 
 void SessionController::showChooseReportMessages(

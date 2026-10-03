@@ -41,10 +41,6 @@ namespace Ui {
 class BoxContent;
 } // namespace Ui
 
-namespace Passport {
-struct SavedCredentials;
-} // namespace Passport
-
 namespace Iv {
 class Data;
 } // namespace Iv
@@ -256,13 +252,6 @@ public:
 
 	void suggestStartExport(TimeId availableAt);
 	void clearExportSuggestion();
-
-	[[nodiscard]] auto passportCredentials() const
-	-> const Passport::SavedCredentials*;
-	void rememberPassportCredentials(
-		Passport::SavedCredentials data,
-		crl::time rememberFor);
-	void forgetPassportCredentials();
 
 	[[nodiscard]] Storage::Cache::Database &cache();
 	[[nodiscard]] Storage::Cache::Database &cacheBigFile();
@@ -1364,11 +1353,6 @@ private:
 	MessageIdsList _mimeForwardIds;
 
 	std::weak_ptr<CreditsSubsRebuilder> _creditsSubsRebuilder;
-
-	using CredentialsWithGeneration = std::pair<
-		const Passport::SavedCredentials,
-		int>;
-	std::unique_ptr<CredentialsWithGeneration> _passportCredentials;
 
 	std::vector<WallPaper> _wallpapers;
 	uint64 _wallpapersHash = 0;

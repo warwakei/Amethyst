@@ -575,6 +575,8 @@ PRIVATE
     boxes/url_auth_box.h
     boxes/username_box.cpp
     boxes/username_box.h
+    boxes/verify_email_box.cpp
+    boxes/verify_email_box.h
     calls/group/calls_choose_join_as.cpp
     calls/group/calls_choose_join_as.h
     calls/group/calls_cover_item.cpp
@@ -1750,24 +1752,6 @@ PRIVATE
     poll/poll_media_upload.h
     passport/passport_encryption.cpp
     passport/passport_encryption.h
-    passport/passport_form_controller.cpp
-    passport/passport_form_controller.h
-    passport/passport_form_view_controller.cpp
-    passport/passport_form_view_controller.h
-    passport/passport_panel.cpp
-    passport/passport_panel.h
-    passport/passport_panel_controller.cpp
-    passport/passport_panel_controller.h
-    passport/passport_panel_edit_contact.cpp
-    passport/passport_panel_edit_contact.h
-    passport/passport_panel_edit_document.cpp
-    passport/passport_panel_edit_document.h
-    passport/passport_panel_edit_scans.cpp
-    passport/passport_panel_edit_scans.h
-    passport/passport_panel_form.cpp
-    passport/passport_panel_form.h
-    passport/passport_panel_password.cpp
-    passport/passport_panel_password.h
     payments/payments_checkout_process.cpp
     payments/payments_checkout_process.h
     payments/payments_form.cpp

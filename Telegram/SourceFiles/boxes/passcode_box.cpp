@@ -28,7 +28,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ui/painter.h"
 #include "ui/rect.h"
 #include "passport/passport_encryption.h"
-#include "passport/passport_panel_edit_contact.h"
+#include "boxes/verify_email_box.h"
 #include "settings/sections/settings_privacy_security.h"
 #include "styles/style_layers.h"
 #include "styles/style_passcode_box.h"

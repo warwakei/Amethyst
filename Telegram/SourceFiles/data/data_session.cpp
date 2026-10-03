@@ -39,7 +39,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "media/player/media_player_instance.h" // instance()->play()
 #include "media/audio/media_audio.h"
 #include "boxes/abstract_box.h"
-#include "passport/passport_form_controller.h"
 #include "iv/iv_data.h"
 #include "lang/lang_keys.h" // tr::lng_deleted(tr::now) in user name
 #include "data/business/data_business_chatbots.h"
@@ -1730,30 +1729,6 @@ void Session::suggestStartExport() {
 	} else {
 		_exportSuggestion = Export::View::SuggestStart(&session());
 	}
-}
-
-const Passport::SavedCredentials *Session::passportCredentials() const {
-	return _passportCredentials ? &_passportCredentials->first : nullptr;
-}
-
-void Session::rememberPassportCredentials(
-		Passport::SavedCredentials data,
-		crl::time rememberFor) {
-	Expects(rememberFor > 0);
-
-	static auto generation = 0;
-	_passportCredentials = std::make_unique<CredentialsWithGeneration>(
-		std::move(data),
-		++generation);
-	base::call_delayed(rememberFor, _session, [=, check = generation] {
-		if (_passportCredentials && _passportCredentials->second == check) {
-			forgetPassportCredentials();
-		}
-	});
-}
-
-void Session::forgetPassportCredentials() {
-	_passportCredentials = nullptr;
 }
 
 void Session::setupMigrationViewer() {

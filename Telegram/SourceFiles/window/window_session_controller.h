@@ -58,11 +58,6 @@ namespace Calls {
 struct StartGroupCallArgs;
 } // namespace Calls
 
-namespace Passport {
-struct FormRequest;
-class FormController;
-} // namespace Passport
-
 namespace Ui {
 class LayerWidget;
 class ChatStyle;
@@ -582,9 +577,6 @@ public:
 	void showNewGroup();
 	void showNewChannel();
 
-	void showPassportForm(const Passport::FormRequest &request);
-	void clearPassportForm();
-
 	struct MessageContext {
 		FullMsgId id;
 		MsgId topicRootId;
@@ -839,7 +831,6 @@ private:
 	using SendingAnimation = Ui::MessageSendingAnimationController;
 	const std::unique_ptr<SendingAnimation> _sendingAnimation;
 
-	std::unique_ptr<Passport::FormController> _passportForm;
 	std::unique_ptr<FiltersMenu> _filters;
 
 	GifPauseReasons _gifPauseReasons = 0;
