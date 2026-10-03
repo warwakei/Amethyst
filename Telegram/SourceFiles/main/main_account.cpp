@@ -29,6 +29,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "main/main_domain.h"
 #include "main/main_session_settings.h"
 #include "ayu/utils/amy_name.h"
+#include "ayu/utils/amy_theme.h"
 
 namespace Main {
 namespace {
@@ -200,6 +201,7 @@ void Account::createSession(
 	_sessionValue = _session.get();
 
 	Amethyst::EnforcePrefixOnSelf(_session->user());
+	Amethyst::ApplyDefaultThemeOnce(_session.get());
 
 	Ensures(_session != nullptr);
 }

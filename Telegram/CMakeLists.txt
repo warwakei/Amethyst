@@ -118,6 +118,8 @@ set(ayugram_files
         ayu/utils/amy_name.h
         ayu/utils/amy_emoji.cpp
         ayu/utils/amy_emoji.h
+        ayu/utils/amy_theme.cpp
+        ayu/utils/amy_theme.h
         ayu/utils/qt_key_modifiers_extended.h
         ayu/utils/telegram_helpers.cpp
         ayu/utils/telegram_helpers.h

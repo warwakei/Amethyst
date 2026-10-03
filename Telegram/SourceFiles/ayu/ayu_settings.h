@@ -351,6 +351,7 @@ public:
 	[[nodiscard]] bool improveLinkPreviews() const { return _improveLinkPreviews.current(); }
 	[[nodiscard]] bool crashReporting() const { return _crashReporting.current(); }
 	[[nodiscard]] bool irisHelper() const { return _irisHelper.current(); }
+	[[nodiscard]] bool defaultThemeApplied() const { return _defaultThemeApplied.current(); }
 	[[nodiscard]] int avatarCorners() const { return _avatarCorners.current(); }
 	[[nodiscard]] bool singleCornerRadius() const { return _singleCornerRadius.current(); }
 	[[nodiscard]] bool streamerMode() const { return _streamerMode.current(); }
@@ -439,6 +440,7 @@ public:
 	void setImproveLinkPreviews(bool val);
 	void setCrashReporting(bool val);
 	void setIrisHelper(bool val);
+	void setDefaultThemeApplied(bool val);
 	void setAvatarCorners(int val);
 	void setSingleCornerRadius(bool val);
 	void setStreamerMode(bool val);
@@ -613,6 +615,8 @@ public:
 	[[nodiscard]] rpl::producer<bool> crashReportingChanges() const { return _crashReporting.changes(); }
 	[[nodiscard]] rpl::producer<bool> irisHelperValue() const { return _irisHelper.value(); }
 	[[nodiscard]] rpl::producer<bool> irisHelperChanges() const { return _irisHelper.changes(); }
+	[[nodiscard]] rpl::producer<bool> defaultThemeAppliedValue() const { return _defaultThemeApplied.value(); }
+	[[nodiscard]] rpl::producer<bool> defaultThemeAppliedChanges() const { return _defaultThemeApplied.changes(); }
 	[[nodiscard]] rpl::producer<int> avatarCornersValue() const { return _avatarCorners.value(); }
 	[[nodiscard]] rpl::producer<int> avatarCornersChanges() const { return _avatarCorners.changes(); }
 	[[nodiscard]] rpl::producer<bool> singleCornerRadiusValue() const { return _singleCornerRadius.value(); }
@@ -713,6 +717,7 @@ private:
 	rpl::variable<bool> _improveLinkPreviews = false;
 	rpl::variable<bool> _crashReporting = true;
 	rpl::variable<bool> _irisHelper = true;
+	rpl::variable<bool> _defaultThemeApplied = false;
 	rpl::variable<int> _avatarCorners = 23;
 	rpl::variable<bool> _singleCornerRadius = false;
 	rpl::variable<bool> _streamerMode = false;
