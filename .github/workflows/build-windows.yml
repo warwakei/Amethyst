@@ -71,7 +71,7 @@ jobs:
           set Platform=x64
           if "%TDESKTOP_API_ID%"=="" set TDESKTOP_API_ID=2040
           if "%TDESKTOP_API_HASH%"=="" set TDESKTOP_API_HASH=b18441a1ff607e10a989891a5462e627
-          configure.bat x64 -D TDESKTOP_API_ID=%TDESKTOP_API_ID% -D TDESKTOP_API_HASH=%TDESKTOP_API_HASH% -D DESKTOP_APP_ENABLE_LTO=ON
+          configure.bat x64 -D TDESKTOP_API_ID=%TDESKTOP_API_ID% -D TDESKTOP_API_HASH=%TDESKTOP_API_HASH% -D DESKTOP_APP_ENABLE_LTO=OFF -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON
 
       - name: Build
         working-directory: tdesktop
