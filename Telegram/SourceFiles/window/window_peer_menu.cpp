@@ -117,7 +117,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "dialogs/dialogs_key.h"
 #include "core/application.h"
 #include "core/ui_integration.h"
-#include "export/export_manager.h"
 #include "boxes/peers/edit_participants_box.h"
 #include "boxes/peers/edit_peer_info_box.h"
 #include "boxes/peers/manage_community_box.h"
@@ -329,7 +328,6 @@ private:
 	void addViewDiscussion();
 	void addDirectMessages();
 	void addToggleTopicClosed();
-	void addExportChat();
 	void addTranslate();
 	void addReport();
 	void addNewContact();
@@ -1010,26 +1008,6 @@ void Filler::addDirectMessages() {
 			monoforum,
 			Window::SectionShow::Way::Forward);
 	}, &st::menuIconChatDiscuss);
-}
-
-void Filler::addExportChat() {
-	if (!_peer->canExportChatHistory()) {
-		return;
-	}
-	const auto peer = _peer;
-	const auto navigation = _controller;
-	if (const auto topic = _thread->asTopic()) {
-		const auto topicRootId = topic->rootId();
-		_addAction(
-			tr::lng_profile_export_topic(tr::now),
-			[=] { PeerMenuExportTopic(navigation, peer, topicRootId); },
-			&st::menuIconExport);
-		return;
-	}
-	_addAction(
-		tr::lng_profile_export_chat(tr::now),
-		[=] { PeerMenuExportChat(navigation, peer); },
-		&st::menuIconExport);
 }
 
 void Filler::addTranslate() {
@@ -1891,7 +1869,6 @@ void Filler::fillHistoryActions() {
 	addToggleNoForwards();
 	addViewDiscussion();
 	addDirectMessages();
-	addExportChat();
 	addTranslate();
 	addReport();
 	addClearHistory();
@@ -1920,7 +1897,6 @@ void Filler::fillProfileActions() {
 	AyuUi::AddShadowBanAction(_peer, _addAction);
 	addViewDiscussion();
 	addDirectMessages();
-	addExportChat();
 	addToggleNoForwards();
 	addToggleFolder();
 	addBlockUser();
@@ -2106,25 +2082,6 @@ void Filler::addSetPersonalChannel() {
 }
 
 } // namespace
-
-void PeerMenuExportChat(
-		not_null<Window::SessionController*> controller,
-		not_null<PeerData*> peer) {
-	base::call_delayed(st::defaultPopupMenu.showDuration, [=] {
-		Core::App().exportManager().start(peer);
-	});
-}
-
-void PeerMenuExportTopic(
-		not_null<Window::SessionNavigation*> navigation,
-		not_null<PeerData*> peer,
-		MsgId topicRootId) {
-	base::call_delayed(st::defaultPopupMenu.showDuration, [=] {
-		const auto topic = peer->forumTopicFor(topicRootId);
-		const auto topicTitle = topic ? topic->title() : QString();
-		Core::App().exportManager().startTopic(peer, topicRootId, topicTitle);
-	});
-}
 
 void PeerMenuDeleteContact(
 		not_null<Window::SessionController*> controller,

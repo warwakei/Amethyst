@@ -26,7 +26,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "core/update_checker.h"
 #include "data/data_auto_download.h"
 #include "data/data_session.h"
-#include "export/export_manager.h"
 #include "info/downloads/info_downloads_widget.h"
 #include "info/info_memento.h"
 #include "lang/lang_keys.h"

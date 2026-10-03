@@ -38,10 +38,6 @@ void SetupDefaultThemes(
 void SetupSupport(
 	not_null<Window::SessionController*> controller,
 	not_null<Ui::VerticalLayout*> container);
-void SetupExport(
-	not_null<Window::SessionController*> controller,
-	not_null<Ui::VerticalLayout*> container,
-	Fn<void(Type)> showOther);
 
 void PaintRoundColorButton(
 	QPainter &p,

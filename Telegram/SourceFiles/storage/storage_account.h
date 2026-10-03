@@ -148,9 +148,6 @@ public:
 	void saveRecentSentHashtags(const QString &text);
 	void saveRecentSearchHashtags(const QString &text);
 
-	void writeExportSettings(const Export::Settings &settings);
-	[[nodiscard]] Export::Settings readExportSettings();
-
 	void setMediaLastPlaybackPosition(DocumentId id, crl::time time);
 	[[nodiscard]] crl::time mediaLastPlaybackPosition(DocumentId id) const;
 
@@ -349,7 +346,6 @@ private:
 	FileKey _legacyBackgroundKeyNight = 0;
 	FileKey _settingsKey = 0;
 	FileKey _recentHashtagsAndBotsKey = 0;
-	FileKey _exportSettingsKey = 0;
 	FileKey _installedMasksKey = 0;
 	FileKey _recentMasksKey = 0;
 	FileKey _installedCustomEmojiKey = 0;

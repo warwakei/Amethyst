@@ -56,14 +56,6 @@ struct TrackState;
 } // namespace Player
 } // namespace Media
 
-namespace Export {
-namespace View {
-class TopBar;
-class PanelController;
-struct Content;
-} // namespace View
-} // namespace Export
-
 namespace Ui {
 class ChatTheme;
 class ResizeArea;
@@ -260,11 +252,6 @@ private:
 	void destroyCallTopBar();
 	void callTopBarHeightUpdated(int callTopBarHeight);
 
-	void setCurrentExportView(Export::View::PanelController *view);
-	void createExportTopBar(Export::View::Content &&data);
-	void destroyExportTopBar();
-	void exportTopBarHeightUpdated();
-
 	Window::SectionSlideParams prepareShowAnimation(
 		bool willHaveTopBarShadow,
 		bool fromBottom);
@@ -361,11 +348,6 @@ private:
 	rpl::lifetime _currentCallLifetime;
 	object_ptr<Ui::SlideWrap<Calls::TopBar>> _callTopBar = { nullptr };
 
-	Export::View::PanelController *_currentExportView = nullptr;
-	object_ptr<Window::TopBarWrapWidget<Export::View::TopBar>> _exportTopBar
-		= { nullptr };
-	rpl::lifetime _exportViewLifetime;
-
 	object_ptr<Window::TopBarWrapWidget<Media::Player::Widget>> _player
 		= { nullptr };
 	object_ptr<Media::Player::Panel> _playerPlaylist;
@@ -375,7 +357,6 @@ private:
 
 	int _playerHeight = 0;
 	int _callTopBarHeight = 0;
-	int _exportTopBarHeight = 0;
 	int _contentScrollAddToY = 0;
 
 	struct SettingBackground;

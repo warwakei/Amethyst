@@ -34,7 +34,6 @@ include(cmake/lib_stripe.cmake)
 include(cmake/lib_tgcalls.cmake)
 include(cmake/lib_prisma.cmake)
 include(cmake/lib_fido2.cmake)
-include(cmake/td_export.cmake)
 include(cmake/td_iv.cmake)
 include(cmake/td_lang.cmake)
 include(cmake/td_mtproto.cmake)
@@ -63,7 +62,6 @@ target_link_libraries(Telegram
 PRIVATE
     tdesktop::lib_fido2
     tdesktop::lib_tgcalls
-    tdesktop::td_export
     tdesktop::td_iv
     tdesktop::td_lang
     tdesktop::td_mtproto
@@ -1032,18 +1030,6 @@ PRIVATE
     editor/photo_editor_layer_widget.h
     editor/scene/scene_item_sticker.cpp
     editor/scene/scene_item_sticker.h
-    export/export_manager.cpp
-    export/export_manager.h
-    export/view/export_view_content.cpp
-    export/view/export_view_content.h
-    export/view/export_view_panel_controller.cpp
-    export/view/export_view_panel_controller.h
-    export/view/export_view_progress.cpp
-    export/view/export_view_progress.h
-    export/view/export_view_settings.cpp
-    export/view/export_view_settings.h
-    export/view/export_view_top_bar.cpp
-    export/view/export_view_top_bar.h
     history/admin_log/history_admin_log_filter.cpp
     history/admin_log/history_admin_log_filter.h
     history/admin_log/history_admin_log_inner.cpp
@@ -2268,7 +2254,6 @@ PRIVATE
     qrc/emoji_8.qrc
     qrc/emoji_preview.qrc
     qrc/telegram/animations.qrc
-    qrc/telegram/export.qrc
     qrc/telegram/export_rich.qrc
     qrc/telegram/picker.qrc
     qrc/telegram/telegram.qrc

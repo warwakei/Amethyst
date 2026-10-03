@@ -21,7 +21,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "storage/storage_domain.h"
 #include "storage/storage_account.h"
 #include "storage/localstorage.h"
-#include "export/export_settings.h"
 #include "window/notifications_manager.h"
 #include "window/window_controller.h"
 #include "data/data_peer_values.h" // Data::AmPremiumValue.
@@ -69,7 +68,6 @@ Storage::StartResult Domain::start(const QByteArray &passcode) {
 	const auto result = _local->start(passcode);
 	if (result == Storage::StartResult::Success) {
 		activateAfterStarting();
-		crl::on_main(&Core::App(), [=] { suggestExportIfNeeded(); });
 	} else {
 		Assert(!started());
 	}
@@ -80,19 +78,6 @@ void Domain::finish() {
 	_accountToActivate = -1;
 	_active.reset(nullptr);
 	base::take(_accounts);
-}
-
-void Domain::suggestExportIfNeeded() {
-	Expects(started());
-
-	for (const auto &[index, account] : _accounts) {
-		if (const auto session = account->maybeSession()) {
-			const auto settings = session->local().readExportSettings();
-			if (const auto availableAt = settings.availableAt) {
-				session->data().suggestStartExport(availableAt);
-			}
-		}
-	}
 }
 
 void Domain::accountAddedInStorage(AccountWithIndex accountWithIndex) {

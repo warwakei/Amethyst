@@ -38,7 +38,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_document.h"
 #include "data/data_user.h"
 #include "data/data_drafts.h"
-#include "export/export_settings.h"
 #include "webview/webview_interface.h"
 #include "window/themes/window_theme.h"
 
@@ -56,15 +55,6 @@ constexpr auto kStickersVersionTag = quint32(-1);
 constexpr auto kStickersSerializeVersion = 4;
 constexpr auto kMaxSavedStickerSetsCount = 1000;
 constexpr auto kDefaultStickerInstallDate = TimeId(1);
-
-constexpr auto kSinglePeerTypeUserOld = qint32(1);
-constexpr auto kSinglePeerTypeChatOld = qint32(2);
-constexpr auto kSinglePeerTypeChannelOld = qint32(3);
-constexpr auto kSinglePeerTypeUser = qint32(8 + 1);
-constexpr auto kSinglePeerTypeChat = qint32(8 + 2);
-constexpr auto kSinglePeerTypeChannel = qint32(8 + 3);
-constexpr auto kSinglePeerTypeSelf = qint32(4);
-constexpr auto kSinglePeerTypeEmpty = qint32(0);
 constexpr auto kMultiDraftTagOld = quint64(0xFFFF'FFFF'FFFF'FF01ULL);
 constexpr auto kMultiDraftCursorsTagOld = quint64(0xFFFF'FFFF'FFFF'FF02ULL);
 constexpr auto kMultiDraftTag = quint64(0xFFFF'FFFF'FFFF'FF03ULL);
@@ -360,7 +350,7 @@ Account::ReadMapResult Account::readMapWith(
 	quint64 installedCustomEmojiKey = 0, featuredCustomEmojiKey = 0, archivedCustomEmojiKey = 0;
 	quint64 savedGifsKey = 0;
 	quint64 legacyBackgroundKeyDay = 0, legacyBackgroundKeyNight = 0;
-	quint64 userSettingsKey = 0, recentHashtagsAndBotsKey = 0, exportSettingsKey = 0;
+	quint64 userSettingsKey = 0, recentHashtagsAndBotsKey = 0;
 	quint64 searchSuggestionsKey = 0;
 	quint64 roundPlaceholderKey = 0;
 	quint64 inlineBotsDownloadsKey = 0;
@@ -460,7 +450,8 @@ Account::ReadMapResult Account::readMapWith(
 			map.stream >> key;
 		} break;
 		case lskExportSettings: {
-			map.stream >> exportSettingsKey;
+			quint64 key;
+			map.stream >> key;
 		} break;
 		case lskMasksKeys: {
 			map.stream
@@ -540,7 +531,6 @@ Account::ReadMapResult Account::readMapWith(
 	_legacyBackgroundKeyNight = legacyBackgroundKeyNight;
 	_settingsKey = userSettingsKey;
 	_recentHashtagsAndBotsKey = recentHashtagsAndBotsKey;
-	_exportSettingsKey = exportSettingsKey;
 	_searchSuggestionsKey = searchSuggestionsKey;
 	_roundPlaceholderKey = roundPlaceholderKey;
 	_inlineBotsDownloadsKey = inlineBotsDownloadsKey;
@@ -649,7 +639,6 @@ void Account::writeMap() {
 	if (_savedGifsKey) mapSize += sizeof(quint32) + sizeof(quint64);
 	if (_settingsKey) mapSize += sizeof(quint32) + sizeof(quint64);
 	if (_recentHashtagsAndBotsKey) mapSize += sizeof(quint32) + sizeof(quint64);
-	if (_exportSettingsKey) mapSize += sizeof(quint32) + sizeof(quint64);
 	if (_installedMasksKey || _recentMasksKey || _archivedMasksKey) {
 		mapSize += sizeof(quint32) + 3 * sizeof(quint64);
 	}
@@ -711,9 +700,6 @@ void Account::writeMap() {
 	}
 	if (_recentHashtagsAndBotsKey) {
 		mapData.stream << quint32(lskRecentHashtagsAndBots) << quint64(_recentHashtagsAndBotsKey);
-	}
-	if (_exportSettingsKey) {
-		mapData.stream << quint32(lskExportSettings) << quint64(_exportSettingsKey);
 	}
 	if (_installedMasksKey || _recentMasksKey || _archivedMasksKey) {
 		mapData.stream << quint32(lskMasksKeys);
@@ -787,7 +773,7 @@ void Account::reset() {
 	_featuredCustomEmojiKey = 0;
 	_archivedCustomEmojiKey = 0;
 	_legacyBackgroundKeyDay = _legacyBackgroundKeyNight = 0;
-	_settingsKey = _recentHashtagsAndBotsKey = _exportSettingsKey = 0;
+	_settingsKey = _recentHashtagsAndBotsKey = 0;
 	_searchSuggestionsKey = 0;
 	_roundPlaceholderKey = 0;
 	_inlineBotsDownloadsKey = 0;
@@ -2939,163 +2925,6 @@ void Account::saveRecentSearchHashtags(const QString &text) {
 		cSetRecentSearchHashtags(*result);
 		writeRecentHashtagsAndBots();
 	}
-}
-
-void Account::writeExportSettings(const Export::Settings &settings) {
-	const auto check = Export::Settings();
-	if (settings.types == check.types
-		&& settings.fullChats == check.fullChats
-		&& settings.media.types == check.media.types
-		&& settings.media.sizeLimit == check.media.sizeLimit
-		&& settings.path == check.path
-		&& settings.format == check.format
-		&& settings.availableAt == check.availableAt
-		&& !settings.onlySinglePeer()) {
-		if (_exportSettingsKey) {
-			ClearKey(_exportSettingsKey, _basePath);
-			_exportSettingsKey = 0;
-			writeMapDelayed();
-		}
-		return;
-	}
-	if (!_exportSettingsKey) {
-		_exportSettingsKey = GenerateKey(_basePath);
-		writeMapQueued();
-	}
-	quint32 size = sizeof(quint32) * 6
-		+ Serialize::stringSize(settings.path)
-		+ sizeof(qint32) * 2 + sizeof(quint64);
-	EncryptedDescriptor data(size);
-	data.stream
-		<< quint32(settings.types)
-		<< quint32(settings.fullChats)
-		<< quint32(settings.media.types)
-		<< quint32(settings.media.sizeLimit)
-		<< quint32(settings.format)
-		<< settings.path
-		<< quint32(settings.availableAt);
-	settings.singlePeer.match([&](const MTPDinputPeerUser &user) {
-		data.stream
-			<< kSinglePeerTypeUser
-			<< quint64(user.vuser_id().v)
-			<< quint64(user.vaccess_hash().v);
-	}, [&](const MTPDinputPeerChat & chat) {
-		data.stream << kSinglePeerTypeChat << quint64(chat.vchat_id().v);
-	}, [&](const MTPDinputPeerChannel & channel) {
-		data.stream
-			<< kSinglePeerTypeChannel
-			<< quint64(channel.vchannel_id().v)
-			<< quint64(channel.vaccess_hash().v);
-	}, [&](const MTPDinputPeerSelf &) {
-		data.stream << kSinglePeerTypeSelf;
-	}, [&](const MTPDinputPeerEmpty &) {
-		data.stream << kSinglePeerTypeEmpty;
-	}, [&](const MTPDinputPeerUserFromMessage &) {
-		Unexpected("From message peer in single peer export settings.");
-	}, [&](const MTPDinputPeerChannelFromMessage &) {
-		Unexpected("From message peer in single peer export settings.");
-	});
-	data.stream << qint32(settings.singlePeerFrom);
-	data.stream << qint32(settings.singlePeerTill);
-
-	FileWriteDescriptor file(_exportSettingsKey, _basePath);
-	file.writeEncrypted(data, _localKey);
-}
-
-Export::Settings Account::readExportSettings() {
-	if (!_exportSettingsKey) {
-		return {};
-	}
-
-	FileReadDescriptor file;
-	if (!ReadEncryptedFile(file, _exportSettingsKey, _basePath, _localKey)) {
-		ClearKey(_exportSettingsKey, _basePath);
-		_exportSettingsKey = 0;
-		writeMapDelayed();
-		return {};
-	}
-
-	quint32 types = 0, fullChats = 0;
-	quint32 mediaTypes = 0, mediaSizeLimit = 0;
-	quint32 format = 0, availableAt = 0;
-	QString path;
-	qint32 singlePeerType = 0, singlePeerBareIdOld = 0;
-	quint64 singlePeerBareId = 0;
-	quint64 singlePeerAccessHash = 0;
-	qint32 singlePeerFrom = 0, singlePeerTill = 0;
-	file.stream
-		>> types
-		>> fullChats
-		>> mediaTypes
-		>> mediaSizeLimit
-		>> format
-		>> path
-		>> availableAt;
-	if (!file.stream.atEnd()) {
-		file.stream >> singlePeerType;
-		switch (singlePeerType) {
-		case kSinglePeerTypeUserOld:
-		case kSinglePeerTypeChannelOld: {
-			file.stream >> singlePeerBareIdOld >> singlePeerAccessHash;
-		} break;
-		case kSinglePeerTypeChatOld: file.stream >> singlePeerBareIdOld; break;
-
-		case kSinglePeerTypeUser:
-		case kSinglePeerTypeChannel: {
-			file.stream >> singlePeerBareId >> singlePeerAccessHash;
-		} break;
-		case kSinglePeerTypeChat: file.stream >> singlePeerBareId; break;
-		case kSinglePeerTypeSelf:
-		case kSinglePeerTypeEmpty: break;
-		default: return Export::Settings();
-		}
-	}
-	if (!file.stream.atEnd()) {
-		file.stream >> singlePeerFrom >> singlePeerTill;
-	}
-	auto result = Export::Settings();
-	result.types = Export::Settings::Types::from_raw(types);
-	result.fullChats = Export::Settings::Types::from_raw(fullChats);
-	result.media.types = Export::MediaSettings::Types::from_raw(mediaTypes);
-	result.media.sizeLimit = mediaSizeLimit;
-	result.format = Export::Output::Format(format);
-	result.path = path;
-	result.availableAt = availableAt;
-	result.singlePeer = [&] {
-		switch (singlePeerType) {
-		case kSinglePeerTypeUserOld:
-			return MTP_inputPeerUser(
-				MTP_long(singlePeerBareIdOld),
-				MTP_long(singlePeerAccessHash));
-		case kSinglePeerTypeChatOld:
-			return MTP_inputPeerChat(MTP_long(singlePeerBareIdOld));
-		case kSinglePeerTypeChannelOld:
-			return MTP_inputPeerChannel(
-				MTP_long(singlePeerBareIdOld),
-				MTP_long(singlePeerAccessHash));
-
-		case kSinglePeerTypeUser:
-			return MTP_inputPeerUser(
-				MTP_long(singlePeerBareId),
-				MTP_long(singlePeerAccessHash));
-		case kSinglePeerTypeChat:
-			return MTP_inputPeerChat(MTP_long(singlePeerBareId));
-		case kSinglePeerTypeChannel:
-			return MTP_inputPeerChannel(
-				MTP_long(singlePeerBareId),
-				MTP_long(singlePeerAccessHash));
-		case kSinglePeerTypeSelf:
-			return MTP_inputPeerSelf();
-		case kSinglePeerTypeEmpty:
-			return MTP_inputPeerEmpty();
-		}
-		Unexpected("Type in export data single peer.");
-	}();
-	result.singlePeerFrom = singlePeerFrom;
-	result.singlePeerTill = singlePeerTill;
-	return (file.stream.status() == QDataStream::Ok && result.validate())
-		? result
-		: Export::Settings();
 }
 
 void Account::setMediaLastPlaybackPosition(DocumentId id, crl::time time) {

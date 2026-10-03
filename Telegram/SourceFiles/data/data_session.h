@@ -250,9 +250,6 @@ public:
 	void keepAlive(std::shared_ptr<PhotoMedia> media);
 	void keepAlive(std::shared_ptr<DocumentMedia> media);
 
-	void suggestStartExport(TimeId availableAt);
-	void clearExportSuggestion();
-
 	[[nodiscard]] Storage::Cache::Database &cache();
 	[[nodiscard]] Storage::Cache::Database &cacheBigFile();
 
@@ -1012,8 +1009,6 @@ private:
 		mtpRequestId requestId = 0;
 	};
 
-	void suggestStartExport();
-
 	void setupMigrationViewer();
 	void setupChannelLeavingViewer();
 	void setupPeerNameViewer();
@@ -1166,9 +1161,6 @@ private:
 
 	Storage::DatabasePointer _cache;
 	Storage::DatabasePointer _bigFileCache;
-
-	TimeId _exportAvailableAt = 0;
-	base::weak_qptr<Ui::BoxContent> _exportSuggestion;
 
 	rpl::variable<bool> _contactsLoaded = false;
 	rpl::variable<int> _groupFreeTranscribeLevel;

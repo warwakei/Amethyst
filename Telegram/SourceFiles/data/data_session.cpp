@@ -23,8 +23,6 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "ui/image/image_location_factory.h" // Images::FromPhotoSize
 #include "ui/text/format_values.h" // Ui::FormatPhone
 #include "ui/color_int_conversion.h"
-#include "export/export_manager.h"
-#include "export/view/export_view_panel_controller.h"
 #include "mtproto/mtproto_config.h"
 #include "window/notifications_manager.h"
 #include "history/history.h"
@@ -1696,39 +1694,6 @@ Storage::Cache::Database &Session::cache() {
 
 Storage::Cache::Database &Session::cacheBigFile() {
 	return *_bigFileCache;
-}
-
-void Session::suggestStartExport(TimeId availableAt) {
-	_exportAvailableAt = availableAt;
-	suggestStartExport();
-}
-
-void Session::clearExportSuggestion() {
-	_exportAvailableAt = 0;
-	if (_exportSuggestion) {
-		_exportSuggestion->closeBox();
-	}
-}
-
-void Session::suggestStartExport() {
-	if (_exportAvailableAt <= 0) {
-		return;
-	}
-
-	const auto now = base::unixtime::now();
-	const auto left = (_exportAvailableAt <= now)
-		? 0
-		: (_exportAvailableAt - now);
-	if (left) {
-		base::call_delayed(
-			std::min(left + 5, 3600) * crl::time(1000),
-			_session,
-			[=] { suggestStartExport(); });
-	} else if (Core::App().exportManager().inProgress()) {
-		Export::View::ClearSuggestStart(&session());
-	} else {
-		_exportSuggestion = Export::View::SuggestStart(&session());
-	}
 }
 
 void Session::setupMigrationViewer() {
