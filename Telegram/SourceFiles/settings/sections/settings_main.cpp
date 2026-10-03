@@ -477,16 +477,6 @@ void BuildSectionButtons(SectionBuilder &builder) {
 	});
 
 	builder.addButton({
-		.id = u"main/power"_q,
-		.title = tr::lng_settings_power_menu(),
-		.icon = { &st::menuIconPowerUsage },
-		.onClick = [=] {
-			controller->show(Box(PowerSavingBox, PowerSaving::Flags()));
-		},
-		.keywords = { u"battery"_q, u"animations"_q, u"power"_q, u"saving"_q },
-	});
-
-	builder.addButton({
 		.id = u"main/language"_q,
 		.title = tr::lng_settings_language(),
 		.icon = { &st::menuIconTranslate },
@@ -539,16 +529,6 @@ void BuildPremiumSection(SectionBuilder &builder) {
 	builder.addDivider();
 	builder.addSkip();
 
-	builder.addPremiumButton({
-		.id = u"main/premium"_q,
-		.title = tr::lng_premium_summary_title(),
-		.onClick = [=] {
-			controller->setPremiumRef("settings");
-			showOther(PremiumId());
-		},
-		.keywords = { u"subscription"_q },
-	});
-
 	session->credits().load();
 	builder.addPremiumButton({
 		.id = u"main/credits"_q,
@@ -585,14 +565,6 @@ void BuildPremiumSection(SectionBuilder &builder) {
 		) | rpl::map([](CreditsAmount c) { return !c.empty(); }),
 	});
 
-	builder.addButton({
-		.id = u"main/business"_q,
-		.title = tr::lng_business_title(),
-		.icon = { .icon = &st::menuIconShop },
-		.onClick = [=] { showOther(BusinessId()); },
-		.keywords = { u"work"_q, u"company"_q },
-	});
-
 	if (session->premiumCanBuy()) {
 		builder.addButton({
 			.id = u"main/send-gift"_q,
@@ -602,40 +574,6 @@ void BuildPremiumSection(SectionBuilder &builder) {
 			.keywords = { u"present"_q, u"send"_q },
 		});
 	}
-
-	builder.addSkip();
-}
-
-void BuildHelpSection(SectionBuilder &builder) {
-	builder.addDivider();
-	builder.addSkip();
-
-	const auto controller = builder.controller();
-	builder.addButton({
-		.id = u"main/faq"_q,
-		.title = tr::lng_settings_faq(),
-		.icon = { &st::menuIconFaq },
-		.onClick = [=] { OpenFaq(controller); },
-		.keywords = { u"help"_q, u"support"_q, u"questions"_q },
-	});
-
-	builder.addButton({
-		.id = u"main/features"_q,
-		.title = tr::lng_settings_features(),
-		.icon = { &st::menuIconEmojiObjects },
-		.onClick = [] {
-			UrlClickHandler::Open(tr::lng_telegram_features_url(tr::now));
-		},
-		.keywords = { u"tips"_q, u"tutorial"_q },
-	});
-
-	builder.addButton({
-		.id = u"main/ask-question"_q,
-		.title = tr::lng_settings_ask_question(),
-		.icon = { &st::menuIconDiscussion },
-		.onClick = [=] { OpenAskQuestionConfirm(controller); },
-		.keywords = { u"contact"_q, u"feedback"_q },
-	});
 
 	builder.addSkip();
 }
@@ -754,7 +692,6 @@ void Main::setupContent() {
 		builder.addSkip();
 		BuildInterfaceScale(builder);
 		BuildPremiumSection(builder);
-		BuildHelpSection(builder);
 
 		std::move(showFinished) | rpl::on_next([=] {
 			for (const auto &[id, entry] : *highlights) {
@@ -829,7 +766,6 @@ const auto kMeta = BuildHelper({
 
 	BuildInterfaceScale(builder);
 	BuildPremiumSection(builder);
-	BuildHelpSection(builder);
 });
 
 } // namespace
