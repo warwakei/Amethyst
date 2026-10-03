@@ -5,6 +5,7 @@
 #include "ayu/ui/boxes/iris_punish_box.h"
 
 #include "lang_auto.h"
+#include "styles/style_add_contact_box.h"
 #include "styles/style_boxes.h"
 #include "styles/style_layers.h"
 #include "styles/style_widgets.h"
