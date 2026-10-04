@@ -62,7 +62,6 @@ set(style_files
     history/view/controls/history_view_voice_record_bar.style
     ui/controls/location_picker.style
     calls/calls.style
-    export/view/export.style
     info/info.style
     info/profile/info_profile_actions.style
     info/profile/info_profile_top_bar.style
