@@ -71,7 +71,12 @@ jobs:
           set Platform=x64
           if "%TDESKTOP_API_ID%"=="" set TDESKTOP_API_ID=2040
           if "%TDESKTOP_API_HASH%"=="" set TDESKTOP_API_HASH=b18441a1ff607e10a989891a5462e627
-          configure.bat x64 -D TDESKTOP_API_ID=%TDESKTOP_API_ID% -D TDESKTOP_API_HASH=%TDESKTOP_API_HASH% -D DESKTOP_APP_ENABLE_LTO=OFF -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT=Embedded
+          configure.bat x64 -D TDESKTOP_API_ID=%TDESKTOP_API_ID% -D TDESKTOP_API_HASH=%TDESKTOP_API_HASH% -D DESKTOP_APP_ENABLE_LTO=OFF -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON -D CMAKE_MSVC_DEBUG_INFORMATION_FORMAT=
+
+      - name: Verify build flags
+        working-directory: tdesktop
+        run: |
+          findstr /C:"WholeProgramOptimization" /C:"DebugInformationFormat" /C:"GenerateDebugInformation" out\Telegram\Telegram.vcxproj
 
       - name: Build
         working-directory: tdesktop
@@ -81,7 +86,7 @@ jobs:
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           set Platform=x64
-          cmake --build out --config %BUILD_CONFIG% --target Telegram
+          cmake --build out --config %BUILD_CONFIG% --target Telegram -- /m:1
 
       - name: Upload exe
         uses: actions/upload-artifact@v4
