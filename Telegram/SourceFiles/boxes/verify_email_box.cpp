@@ -208,6 +208,8 @@ void VerifyBox::prepare() {
 	}, _content->lifetime());
 }
 
+} // namespace
+
 object_ptr<Ui::BoxContent> VerifyEmailBox(
 		const QString &email,
 		int codeLength,
