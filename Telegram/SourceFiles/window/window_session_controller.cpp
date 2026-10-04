@@ -68,6 +68,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_web_page.h"
 #include "data/data_search_calendar.h"
 #include "dialogs/ui/chat_search_in.h"
+#include "core/core_cloud_password.h"
 #include "chat_helpers/tabbed_selector.h"
 #include "chat_helpers/emoji_interactions.h"
 #include "core/shortcuts.h"

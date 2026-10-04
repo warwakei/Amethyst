@@ -249,7 +249,6 @@ base::flat_set<QString> Account::collectGoodNames() const {
 		_legacyBackgroundKeyNight,
 		_legacyBackgroundKeyDay,
 		_recentHashtagsAndBotsKey,
-		_exportSettingsKey,
 		_trustedPeersKey,
 		_installedMasksKey,
 		_recentMasksKey,

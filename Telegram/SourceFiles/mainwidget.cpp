@@ -2080,9 +2080,6 @@ void MainWidget::orderWidgets() {
 	if (_player) {
 		_player->raise();
 	}
-	if (_exportTopBar) {
-		_exportTopBar->raise();
-	}
 	if (_callTopBar) {
 		_callTopBar->raise();
 	}
@@ -2219,7 +2216,7 @@ void MainWidget::paintEvent(QPaintEvent *e) {
 }
 
 int MainWidget::getMainSectionTop() const {
-	return _callTopBarHeight + _exportTopBarHeight + _playerHeight;
+	return _callTopBarHeight + _playerHeight;
 }
 
 int MainWidget::getThirdSectionTop() const {
@@ -2391,13 +2388,9 @@ void MainWidget::updateControlsGeometry() {
 			_callTopBar->resizeToWidth(dialogsWidth);
 			_callTopBar->moveToLeft(0, 0);
 		}
-		if (_exportTopBar) {
-			_exportTopBar->resizeToWidth(dialogsWidth);
-			_exportTopBar->moveToLeft(0, _callTopBarHeight);
-		}
 		if (_player) {
 			_player->resizeToWidth(dialogsWidth);
-			_player->moveToLeft(0, _callTopBarHeight + _exportTopBarHeight);
+			_player->moveToLeft(0, _callTopBarHeight);
 		}
 		const auto mainSectionGeometry = QRect(
 			0,
@@ -2452,15 +2445,11 @@ void MainWidget::updateControlsGeometry() {
 			_callTopBar->resizeToWidth(mainSectionWidth);
 			_callTopBar->moveToLeft(dialogsWidth, 0);
 		}
-		if (_exportTopBar) {
-			_exportTopBar->resizeToWidth(mainSectionWidth);
-			_exportTopBar->moveToLeft(dialogsWidth, _callTopBarHeight);
-		}
 		if (_player) {
 			_player->resizeToWidth(mainSectionWidth);
 			_player->moveToLeft(
 				dialogsWidth,
-				_callTopBarHeight + _exportTopBarHeight);
+				_callTopBarHeight);
 		}
 		_history->setGeometryWithTopMoved(QRect(
 			dialogsWidth,
