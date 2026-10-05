@@ -1014,18 +1014,13 @@ void AddIrisModerationActions(not_null<Ui::PopupMenu*> menu, HistoryItem *item) 
 		|| !item->isHistoryEntry()
 		|| item->isService()
 		|| item->isLocal()
-		|| item->out()
 		|| item->id <= 0) {
 		LOG(("AmyIris: skip non-target item."));
 		return;
 	}
 	const auto history = item->history();
-	const auto peer = history->peer;
-	if (peer->isSelf() || peer->isUser()) {
-		return;
-	}
 	const auto fromUser = item->from()->asUser();
-	if (!fromUser || fromUser->isSelf() || fromUser->isBot()) {
+	if (!fromUser || fromUser->isSelf()) {
 		LOG(("AmyIris: skip non-user author."));
 		return;
 	}

@@ -11,6 +11,7 @@
 #include "mainwindow.h"
 #include "api/api_attached_stickers.h"
 #include "ayu/data/messages_storage.h"
+#include "ayu/ui/context_menu/context_menu.h"
 #include "ayu/ui/message_history/history_section.h"
 #include "base/call_delayed.h"
 #include "base/unixtime.h"
@@ -1338,6 +1339,10 @@ void InnerWidget::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 									 &st::menuIconCopy);
 				}
 			}
+		}
+
+		if (item) {
+			AyuUi::AddIrisModerationActions(_menu, item);
 		}
 
 		const auto actionText = link
