@@ -940,7 +940,7 @@ const Ui::Text::String &FakeRow::name() const {
 			_name.setMarkedText(
 				st::semiboldTextStyle,
 				Amethyst::NameWithAmyEmoji(name),
-				Ui::NameTextOptions(),
+				Ui::DialogTextOptions(),
 				context);
 		} else {
 			_name.setText(

@@ -348,7 +348,7 @@ const Ui::Text::String &Entry::chatListNameText() const {
 			_chatListNameText.setMarkedText(
 				st::semiboldTextStyle,
 				Amethyst::NameWithAmyEmoji(name),
-				Ui::NameTextOptions(),
+				Ui::DialogTextOptions(),
 				context);
 		} else {
 			_chatListNameText.setText(

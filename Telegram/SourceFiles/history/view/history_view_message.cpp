@@ -5405,7 +5405,7 @@ void Message::validateFromNameText(PeerData *from) const {
 			_fromName.setMarkedText(
 				st::msgNameStyle,
 				Amethyst::NameWithAmyEmoji(name),
-				Ui::NameTextOptions(),
+				Ui::DialogTextOptions(),
 				context);
 		} else {
 			_fromName.setText(
