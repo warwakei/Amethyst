@@ -9,6 +9,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include "api/api_suggest_post.h"
 #include "api/api_transcribes.h"
+#include "logs.h"
 #include "base/options.h"
 #include "base/qt/qt_key_modifiers.h"
 #include "base/unixtime.h"
@@ -5394,6 +5395,7 @@ void Message::validateFromNameText(PeerData *from) const {
 		_fromNameVersion = version;
 		const auto name = from->name();
 		if (Amethyst::NameHasAmyTag(name)) {
+			LOG(("AmyEmoji: marked name."));
 			const auto that = const_cast<Message*>(this);
 			const auto context = Core::TextContext({
 				.session = &history()->session(),

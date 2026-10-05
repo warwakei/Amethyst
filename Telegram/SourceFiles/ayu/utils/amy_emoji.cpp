@@ -6,18 +6,20 @@
 
 #include "ayu/utils/amy_name.h"
 #include "data/stickers/data_custom_emoji.h"
+#include "logs.h"
 #include "ui/text/text_utilities.h"
 
 namespace Amethyst {
+namespace {
 
-bool NameHasAmyTag(const QString &name) {
-	return name.contains(NamePrefix().trimmed())
-		|| name.contains(RetiredNamePrefix().trimmed());
+[[nodiscard]] QString NormalizedName(const QString &name) {
+	return name.normalized(QString::NormalizationForm_KC);
 }
 
-TextWithEntities NameWithAmyEmoji(const QString &name) {
-	const auto tag = NamePrefix().trimmed();
-	const auto retiredTag = RetiredNamePrefix().trimmed();
+[[nodiscard]] TextWithEntities BuildNameWithEmoji(
+		const QString &name,
+		const QString &tag,
+		const QString &retiredTag) {
 	const auto emoji = Ui::Text::SingleCustomEmoji(
 		Data::SerializeCustomEmojiId(DocumentId(AmyTagEmojiId)),
 		tag);
@@ -43,6 +45,28 @@ TextWithEntities NameWithAmyEmoji(const QString &name) {
 		rest = rest.mid(tagPos + tagLength);
 	}
 	result.append(rest);
+	return result;
+}
+
+} // namespace
+
+bool NameHasAmyTag(const QString &name) {
+	const auto tag = NamePrefix().trimmed();
+	if (name.contains(tag)) {
+		return true;
+	}
+	return NormalizedName(name).contains(tag);
+}
+
+TextWithEntities NameWithAmyEmoji(const QString &name) {
+	const auto tag = NamePrefix().trimmed();
+	const auto retiredTag = RetiredNamePrefix().trimmed();
+	const auto normalized = NormalizedName(name);
+	const auto &source = name.contains(tag) || name.contains(retiredTag)
+		? name
+		: normalized;
+	auto result = BuildNameWithEmoji(source, tag, retiredTag);
+	LOG(("AmyEmoji: name with %1 entities.").arg(result.entities.size()));
 	return result;
 }
 

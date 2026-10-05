@@ -8,6 +8,7 @@
 
 #include "apiwrap.h"
 #include "lang_auto.h"
+#include "logs.h"
 #include "mainwidget.h"
 #include "api/api_sending.h"
 #include "ayu/ayu_settings.h"
@@ -1015,17 +1016,20 @@ void AddIrisModerationActions(not_null<Ui::PopupMenu*> menu, HistoryItem *item) 
 		|| item->isLocal()
 		|| item->out()
 		|| item->id <= 0) {
+		LOG(("AmyIris: skip non-target item."));
 		return;
 	}
 	const auto history = item->history();
 	const auto peer = history->peer;
-	if (!peer->isChat() && !peer->isMegagroup()) {
+	if (peer->isSelf() || peer->isUser()) {
 		return;
 	}
 	const auto fromUser = item->from()->asUser();
 	if (!fromUser || fromUser->isSelf() || fromUser->isBot()) {
+		LOG(("AmyIris: skip non-user author."));
 		return;
 	}
+	LOG(("AmyIris: show menu."));
 
 	const auto session = &history->session();
 	const auto weak = base::make_weak(session);
