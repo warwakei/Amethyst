@@ -1,0 +1,87 @@
+name: Linux Release build
+
+on:
+  workflow_dispatch:
+    inputs:
+      configuration:
+        description: 'Build configuration'
+        required: true
+        default: 'Release'
+        type: choice
+        options:
+          - Release
+          - Debug
+
+env:
+  BUILD_CONFIG: ${{ inputs.configuration }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          path: tdesktop
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Restore Libraries/ThirdParty cache
+        id: libs-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            tdesktop/Libraries
+            tdesktop/ThirdParty
+          key: tdesktop-libs-linux-${{ hashFiles('tdesktop/Telegram/build/prepare/prepare.py', 'tdesktop/.gitmodules') }}
+
+      - name: Prepare libraries
+        working-directory: tdesktop
+        run: |
+          chmod +x Telegram/build/prepare/linux.sh
+          ./Telegram/build/prepare/linux.sh
+
+      - name: Save Libraries/ThirdParty cache
+        if: steps.libs-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        continue-on-error: true
+        with:
+          path: |
+            tdesktop/Libraries
+            tdesktop/ThirdParty
+          key: tdesktop-libs-linux-${{ hashFiles('tdesktop/Telegram/build/prepare/prepare.py', 'tdesktop/.gitmodules') }}
+
+      - name: Build (Docker)
+        working-directory: tdesktop
+        run: |
+          CONFIG_ARG=""
+          if [ "${{ inputs.configuration }}" = "Debug" ]; then
+            CONFIG_ARG="-e CONFIG=Debug"
+          fi
+          docker run --rm \
+            -u $(id -u) \
+            -v "$PWD:/usr/src/tdesktop" \
+            $CONFIG_ARG \
+            ghcr.io/telegramdesktop/tdesktop/centos_env:latest \
+            /usr/src/tdesktop/Telegram/build/docker/centos_env/build.sh \
+            -D TDESKTOP_API_ID=2040 \
+            -D TDESKTOP_API_HASH=b18441a1ff607e10a989891a5462e627
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Amethyst-Linux-${{ inputs.configuration }}
+          path: tdesktop/out/Telegram
+          if-no-files-found: error
