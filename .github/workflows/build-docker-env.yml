@@ -1,0 +1,66 @@
+name: Build Docker env image
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+    paths:
+      - 'Telegram/build/docker/centos_env/**'
+      - '.github/workflows/build-docker-env.yml'
+
+concurrency:
+  group: docker-env-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/amethyst-centos-env
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Jinja2
+        run: pip install 'jinja2>=3.1.6'
+
+      - name: Render Dockerfile
+        working-directory: Telegram/build/docker/centos_env
+        run: |
+          python3 gen_dockerfile.py > .generated.Dockerfile
+          head -5 .generated.Dockerfile
+          wc -l .generated.Dockerfile
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        working-directory: Telegram/build/docker/centos_env
+        run: |
+          docker buildx build \
+            --file .generated.Dockerfile \
+            --tag "$IMAGE:latest" \
+            --tag "$IMAGE:${{ github.sha }}" \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --cache-from "type=registry,ref=$IMAGE:latest" \
+            --push \
+            .
